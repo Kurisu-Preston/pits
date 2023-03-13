@@ -21,7 +21,7 @@ from models import (
     AvocodoDiscriminator)
 from losses import (generator_loss, discriminator_loss, feature_loss, kl_loss)
 from mel_processing import mel_spectrogram_torch, spec_to_mel_torch
-from text.symbols import symbol_len
+from text.symbols import symbols
 import math
 
 torch.backends.cudnn.benchmark = True
@@ -106,7 +106,7 @@ def run(rank, n_gpus, hps, args):
                               persistent_workers=use_persistent_workers,
                               batch_sampler=train_sampler)
 
-    net_g = SynthesizerTrn(symbol_len(hps.data.languages),
+    net_g = SynthesizerTrn(len(symbols),
                            hps.data.filter_length // 2 + 1,
                            hps.train.segment_size // hps.data.hop_length,
                            n_speakers=len(hps.data.speakers),

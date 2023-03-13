@@ -6,14 +6,13 @@ import utils
 from models import (
     SynthesizerTrn, )
 
-from text.symbols import symbol_len, lang_to_dict
+from text.symbols import symbols
 
 # we use Kyubyong/g2p for demo instead of our internal g2p
 # https://github.com/Kyubyong/g2p
 from g2p_en import G2p
 import re
 
-_symbol_to_id = lang_to_dict("en_US")
 
 class GradioApp:
 
