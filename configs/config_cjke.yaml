@@ -21,9 +21,9 @@ train:
   alpha: 200
 
 data:
-  data_path: "dataset"
-  training_files: "filelists/train.list.cleaned"
-  validation_files: "filelists/val.list.cleaned"
+  data_path: "/DATA/audio/VCTK-0.92"
+  training_files: "filelists/vctk_train_g2p.txt"
+  validation_files: "filelists/vctk_val_g2p.txt"
   languages: "en_US" 
   text_cleaners: ["english_cleaners"]
   sampling_rate: 22050

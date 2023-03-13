@@ -1,38 +1,16 @@
-_pad = '_'
-_punc = ";:,.!?¡¿—-…«»'“”~() "
-
-_jamo_leads = "".join([chr(_) for _ in range(0x1100, 0x1113)])
-_jamo_vowels = "".join([chr(_) for _ in range(0x1161, 0x1176)])
-_jamo_tails = "".join([chr(_) for _ in range(0x11A8, 0x11C3)])
-_kor_characters = _jamo_leads + _jamo_vowels + _jamo_tails
-
-_cmu_characters = [
-    'AA', 'AE', 'AH',
-    'AO', 'AW', 'AY',
-    'B', 'CH', 'D', 'DH', 'EH', 'ER', 'EY',
-    'F', 'G', 'HH', 'IH', 'IY',
-    'JH', 'K', 'L', 'M', 'N', 'NG', 'OW', 'OY',
-    'P', 'R', 'S', 'SH', 'T', 'TH', 'UH', 'UW',
-    'V', 'W', 'Y', 'Z', 'ZH'
-]
+'''
+Defines the set of symbols used in text input to the model.
+'''
 
 
-lang_to_symbols = {
-    'common': [_pad] + list(_punc),
-    'ko_KR': list(_kor_characters), 
-    'en_US': _cmu_characters, 
-}
+# cjke_cleaners2
+_pad        = '_'
+_punctuation = ',.!?-~…'
+_letters = 'NQabdefghijklmnopstuvwxyzɑæʃʑçɯɪɔɛɹðəɫɥɸʊɾʒθβŋɦ⁼ʰ`^#*=ˈˌ→↓↑ '
 
-def lang_to_dict(lang):
-    symbol_lang = lang_to_symbols['common'] + lang_to_symbols[lang]
-    dict_lang = {s: i for i, s in enumerate(symbol_lang)}
-    return dict_lang
+_extra = "ˌ%$"
+# Export all symbols:
+symbols = [_pad] + list(_punctuation) + list(_letters) + list(_extra)
 
-def lang_to_dict_inverse(lang):
-    symbol_lang = lang_to_symbols['common'] + lang_to_symbols[lang]
-    dict_lang = {i: s for i, s in enumerate(symbol_lang)}
-    return dict_lang
-
-def symbol_len(lang):
-    symbol_lang = lang_to_symbols['common'] + lang_to_symbols[lang]
-    return len(symbol_lang)
+# Special symbol ids
+SPACE_ID = symbols.index(" ")

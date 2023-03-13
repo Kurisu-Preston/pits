@@ -7,7 +7,7 @@ import torch.utils.data
 import commons
 from mel_processing import spectrogram_torch
 from utils import load_wav_to_torch, load_filepaths_and_text
-from text import text_to_sequence
+from text import text_to_sequence, cleaned_text_to_sequence
 from analysis import Pitch
 """ Modified from Multi speaker version of VITS"""
 
@@ -64,11 +64,11 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
 
         audiopaths_sid_text_new = []
         lengths = []
-        for audiopath, text, spk in self.audiopaths_sid_text:
+        for audiopath, spk, text, lang in self.audiopaths_sid_text:
             if self.min_text_len <= len(text) and len(
                     text) <= self.max_text_len:
                 audiopath = os.path.join(self.data_path, audiopath)
-                audiopaths_sid_text_new.append([audiopath, text, spk])
+                audiopaths_sid_text_new.append([audiopath, spk, text, lang])
                 lengths.append(
                     os.path.getsize(audiopath) // (2 * self.hop_length))
         self.audiopaths_sid_text = audiopaths_sid_text_new
@@ -76,12 +76,11 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
 
     def get_audio_text_speaker_pair(self, audiopath_sid_text, pt_run=False):
         # separate filename, speaker_id and text
-        audiopath, text, spk = audiopath_sid_text[0], audiopath_sid_text[
-            1], audiopath_sid_text[2]
-        text, tone = self.get_text(text)
+        audiopath, spk, text, lang = audiopath_sid_text
+        text, lang = self.get_text(text, lang)
         spec, ying, wav = self.get_audio(audiopath, pt_run)
         sid = self.get_sid(self.speaker_dict[spk])
-        return (text, spec, ying, wav, sid, tone)
+        return (text, spec, ying, wav, sid, lang)
 
     def get_audio(self, filename, pt_run=False):
         audio, sampling_rate = load_wav_to_torch(filename)
@@ -115,14 +114,14 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
             torch.save(ying, ying_filename)
         return spec, ying, audio_norm
 
-    def get_text(self, text):
-        text_norm, tone = text_to_sequence(text, self.lang)
+    def get_text(self, text, lang):
+        text_norm = cleaned_text_to_sequence(text)
+        lang = [int(i) for i in lang.split(" ")]
         if self.add_blank:
-            text_norm = commons.intersperse(text_norm, 0)
-            tone = commons.intersperse(tone, 0)
+            text_norm,lang = commons.intersperse_with_language_id(text_norm,lang, 0)
         text_norm = torch.LongTensor(text_norm)
-        tone = torch.LongTensor(tone)
-        return text_norm, tone
+        lang = torch.LongTensor(lang)
+        return text_norm, lang
 
     def get_sid(self, sid):
         sid = torch.LongTensor([int(sid)])
