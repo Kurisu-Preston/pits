@@ -322,6 +322,7 @@ def train_and_evaluate(rank, epoch, hps, nets, optims, schedulers, scaler,
                 utils.summarize(writer=writer,
                                 global_step=global_step,
                                 scalars=scalar_dict)
+                print([global_step, loss_gen_all.item(), loss_disc_all.item(), lr])
             if global_step % hps.train.eval_interval == 0:
                 evaluate(hps, global_step, epoch, net_g, eval_loader, writer)
 
@@ -332,10 +333,13 @@ def train_and_evaluate(rank, epoch, hps, nets, optims, schedulers, scaler,
                     os.path.join(hps.model_dir,
                                  "{}_{}.pth".format(hps.model_name, global_step)))
                 try:
-                    rm_path = os.path.join(hps.model_dir,
-                                 "{}_{}.pth".format(hps.model_name, global_step-hps.train.save_interval*3))
-                    os.remove(rm_path)
-                    print("remove ", rm_path)
+                    keep_ckpts = getattr(hps.train, 'keep_ckpts', 0)
+                    if keep_ckpts > 0:
+                        rm_path = os.path.join(hps.model_dir,
+                                     "{}_{}.pth".format(hps.model_name, global_step-hps.train.save_interval*keep_ckpts))
+                        os.remove(rm_path)
+                        print()
+                        print("remove ", rm_path)
                 except:
                     pass
         global_step += 1

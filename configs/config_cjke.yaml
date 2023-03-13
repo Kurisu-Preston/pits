@@ -1,7 +1,7 @@
 train:
-  log_interval: 200   # step unit
-  eval_interval: 1000  # step unit
-  save_interval: 1000  # epoch unit: 50 for baseline / 500 for fine-tuning
+  log_interval: 50   # step unit
+  eval_interval: 400  # step unit
+  save_interval: 200  # epoch unit: 50 for baseline / 500 for fine-tuning
   seed: 1234
   epochs: 7000
   learning_rate: 2e-4
@@ -19,10 +19,11 @@ train:
   log_path: "logs"
   n_sample: 3
   alpha: 200
+  keep_ckpts: 3
 
 data:
   data_path: "dataset"
-  training_files: "filelists/train.list.cleaned.2"
+  training_files: "filelists/train.list.cleaned"
   validation_files: "filelists/val.list.cleaned"
   languages: "en_US" 
   text_cleaners: ["english_cleaners"]
