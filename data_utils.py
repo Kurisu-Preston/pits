@@ -7,7 +7,7 @@ import torch.utils.data
 import commons
 from mel_processing import spectrogram_torch
 from utils import load_wav_to_torch, load_filepaths_and_text
-from text import text_to_sequence, cleaned_text_to_sequence
+from text import  cleaned_text_to_sequence
 from analysis import Pitch
 """ Modified from Multi speaker version of VITS"""
 
@@ -30,8 +30,8 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
         self.lang = hparams.languages
 
         self.add_blank = hparams.add_blank
-        self.min_text_len = getattr(hparams, "min_text_len", 1)
-        self.max_text_len = getattr(hparams, "max_text_len", 190)
+        self.min_text_len = 1
+        self.max_text_len = 190
 
         self.speaker_dict = {
             speaker: idx
@@ -68,6 +68,14 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
             if self.min_text_len <= len(text) and len(
                     text) <= self.max_text_len:
                 audiopath = os.path.join(self.data_path, audiopath)
+                if not os.path.exists(audiopath):
+                    print(audiopath, "not exist!")
+                    continue
+                try:
+                    audio, sampling_rate = load_wav_to_torch(audiopath)
+                except:
+                    print(audiopath, "load error!")
+                    continue
                 audiopaths_sid_text_new.append([audiopath, spk, text, lang])
                 lengths.append(
                     os.path.getsize(audiopath) // (2 * self.hop_length))
@@ -324,9 +332,16 @@ class DistributedBucketSampler(torch.utils.data.distributed.DistributedSampler
 
 def create_spec(audiopaths_sid_text, hparams):
     audiopaths_sid_text = load_filepaths_and_text(audiopaths_sid_text)
-    for audiopath, _, _ in audiopaths_sid_text:
+    for audiopath, _, _, _ in audiopaths_sid_text:
         audiopath = os.path.join(hparams.data_path, audiopath)
-        audio, sampling_rate = load_wav_to_torch(audiopath)
+        if not os.path.exists(audiopath):
+            print(audiopath, "not exist!")
+            continue
+        try:
+            audio, sampling_rate = load_wav_to_torch(audiopath)
+        except:
+            print(audiopath, "load error!")
+            continue
         if sampling_rate != hparams.sampling_rate:
             raise ValueError("{} {} SR doesn't match target {} SR".format(
                 sampling_rate, hparams.sampling_rate))

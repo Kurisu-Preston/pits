@@ -34,7 +34,7 @@ def main(args):
 
     n_gpus = torch.cuda.device_count()
     os.environ['MASTER_ADDR'] = 'localhost'
-    os.environ['MASTER_PORT'] = '80000'
+    os.environ['MASTER_PORT'] = '25565'
 
     hps = utils.get_hparams(args)
     # create spectrogram files
@@ -325,15 +325,22 @@ def train_and_evaluate(rank, epoch, hps, nets, optims, schedulers, scaler,
             if global_step % hps.train.eval_interval == 0:
                 evaluate(hps, global_step, epoch, net_g, eval_loader, writer)
 
+            if global_step % hps.train.save_interval == 0:
+                utils.save_checkpoint(
+                    net_g, optim_g, net_d, optim_d, hps, epoch,
+                    hps.train.learning_rate,
+                    os.path.join(hps.model_dir,
+                                 "{}_{}.pth".format(hps.model_name, global_step)))
+                try:
+                    rm_path = os.path.join(hps.model_dir,
+                                 "{}_{}.pth".format(hps.model_name, global_step-hps.train.save_interval*3))
+                    os.remove(rm_path)
+                    print("remove ", rm_path)
+                except:
+                    pass
         global_step += 1
 
-    if rank == 0:
-        if epoch % hps.train.save_interval == 0:
-            utils.save_checkpoint(
-                net_g, optim_g, net_d, optim_d, hps, epoch,
-                hps.train.learning_rate,
-                os.path.join(hps.model_dir,
-                             "{}_{}.pth".format(hps.model_name, epoch)))
+
 
 
 def evaluate(hps, current_step, epoch, generator, eval_loader, writer):
@@ -542,7 +549,7 @@ def evaluate(hps, current_step, epoch, generator, eval_loader, writer):
                             {"gt/{}_audio".format(i): y[i, :, :y_lengths[i]]})
 
                 utils.summarize(writer=writer,
-                                global_step=epoch,
+                                global_step=current_step,
                                 images=image_dict,
                                 audios=audio_dict,
                                 audio_sampling_rate=hps.data.sampling_rate)
