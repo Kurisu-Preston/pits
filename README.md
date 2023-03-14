@@ -16,11 +16,33 @@ Preprint version contains some errors! Please wait for the update!
 ![overall](asset/overall.png) 
 
 README IS WIP...
+## Preprocess 
+prepare filelist train.list/val.list
+```
+python preprocess.py 
+```
+
+## Config
++ you need to modify speakers list in config/config_cjke.yaml
++ you can also modify the **keep_ckpts** and **log_path**
++ **data_path** is the root path of your data.
 
 ## Training
-WIP...
-```python 
-train.py -c configs/config_en.yaml -m {MODEL_NAME} {-i:if you change yingram setup or etc}
+download the pretrained checkpoint
+```
+wget https://huggingface.co/spaces/anonymous-pits/pits/resolve/main/logs/pits_vctk_AD_3000.pth
+```
+fine tuning the pretrained checkpoint
+```
+python train.py -c configs/config_cjke.yaml -m cjke -t pits_vctk_AD_3000.pth
+```
+training from scratch
+```
+python train.py -c configs/config_cjke.yaml -m cjke
+```
+resume from previous training checkpoint
+```
+python train.py -c configs/config_cjke.yaml -m cjke -r logs/cjke/cjke_3000.pth
 ```
 
 ## References

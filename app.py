@@ -79,7 +79,7 @@ class GradioApp:
                        value="[JA]こんにちは、私は綾地寧々です。[JA]",
                        elem_id="tts-input"),
             gr.Dropdown(list(self.hps.data.speakers),
-                        value="p225",
+                        value=self.hps.data.speakers[0],
                         label="Speaker Identity",
                         type="index"),
             gr.Slider(0, 65536, value=0, step=1, label="random seed"),
