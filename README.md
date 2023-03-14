@@ -18,6 +18,8 @@ Preprint version contains some errors! Please wait for the update!
 README IS WIP...
 ## Preprocess 
 prepare filelist train.list/val.list
+
+support chinese[ZH] japanese[JA] english[EN] korean[KO]
 ```
 python preprocess.py 
 ```
