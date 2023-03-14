@@ -5,21 +5,28 @@ import commons
 import utils
 from models import (
     SynthesizerTrn, )
+from text import cleaned_text_to_sequence
+from text.cleaners import text_to_sequence, _clean_text
 
 from text.symbols import symbols
 
 # we use Kyubyong/g2p for demo instead of our internal g2p
 # https://github.com/Kyubyong/g2p
-from g2p_en import G2p
-import re
-
+def get_text(text, hps):
+    cleaned_text, lang = _clean_text(text)
+    text_norm = cleaned_text_to_sequence(cleaned_text)
+    if hps.data.add_blank:
+        text_norm,lang = commons.intersperse_with_language_id(text_norm,lang, 0)
+    text_norm = torch.LongTensor(text_norm)
+    lang = torch.LongTensor(lang)
+    return text_norm,lang,cleaned_text
 
 class GradioApp:
 
     def __init__(self, args):
         self.hps = utils.get_hparams_from_file(args.config)
         self.device = "cpu"
-        self.net_g = SynthesizerTrn(symbol_len(self.hps.data.languages),
+        self.net_g = SynthesizerTrn(len(symbols),
                                     self.hps.data.filter_length // 2 + 1,
                                     self.hps.train.segment_size //
                                     self.hps.data.hop_length,
@@ -30,21 +37,16 @@ class GradioApp:
                                     **self.hps.model).to(self.device)
         _ = self.net_g.eval()
         _ = utils.load_checkpoint(args.checkpoint_path, model_g=self.net_g)
-        self.g2p = G2p()
         self.interface = self._gradio_interface()
 
     def get_phoneme(self, text):
-        phones = [re.sub("[0-9]", "", p) for p in self.g2p(text)]
-        tone = [0 for p in phones]
+        cleaned_text, lang = _clean_text(text)
+        text_norm = cleaned_text_to_sequence(cleaned_text)
         if self.hps.data.add_blank:
-            text_norm = [_symbol_to_id[symbol] for symbol in phones]
-            text_norm = commons.intersperse(text_norm, 0)
-            tone = commons.intersperse(tone, 0)
-        else:
-            text_norm = phones
+            text_norm, lang = commons.intersperse_with_language_id(text_norm, lang, 0)
         text_norm = torch.LongTensor(text_norm)
-        tone = torch.LongTensor(tone)
-        return text_norm, tone, phones
+        lang = torch.LongTensor(lang)
+        return text_norm, lang, cleaned_text
     
     def inference(self, text, speaker_id_val, seed, scope_shift, duration):
         seed = int(seed)
@@ -74,7 +76,7 @@ class GradioApp:
         title = "PITS Demo"
         self.inputs = [
             gr.Textbox(label="Text (150 words limitation)",
-                       value="This is demo page.",
+                       value="[JA]こんにちは、私は綾地寧々です。[JA]",
                        elem_id="tts-input"),
             gr.Dropdown(list(self.hps.data.speakers),
                         value="p225",
@@ -91,7 +93,7 @@ class GradioApp:
         ]
         description = "Welcome to the Gradio demo for PITS: Variational Pitch Inference without Fundamental Frequency for End-to-End Pitch-controllable TTS.\n In this demo, we utilize an open-source G2P library (g2p_en) with stress removing, instead of our internal G2P.\n You can fix the latent z by controlling random seed.\n You can shift the pitch scope, but please note that this is opposite to pitch-shift. In addition, it is cropped from fixed z so please check pitch-controllability by comparing with normal synthesis.\n Thank you for trying out our PITS demo!"
         article = "Github:https://github.com/anonymous-pits/pits \n Our current preprint contains several errors. Please wait for next update."
-        examples = [["This is a demo page of the PITS."],["I love hugging face."]]
+        examples = [["[JA]こんにちは、私は綾地寧々です。[JA]"],["[JA]This is a demo page of the PITS.[JA]"]]
         return gr.Interface(
             fn=self.inference,
             inputs=self.inputs,
@@ -104,7 +106,7 @@ class GradioApp:
         )
 
     def launch(self):
-        return self.interface.launch(share=False)
+        return self.interface.launch(share=True)
 
 
 def parsearg():
@@ -112,7 +114,7 @@ def parsearg():
     parser.add_argument('-c',
                         '--config',
                         type=str,
-                        default="./configs/config_en.yaml",
+                        default="./configs/config_cjke.yaml",
                         help='Path to configuration file')
     parser.add_argument('-m',
                         '--model',
@@ -122,7 +124,7 @@ def parsearg():
     parser.add_argument('-r',
                         '--checkpoint_path',
                         type=str,
-                        default='./logs/pits_vctk_AD_3000.pth',
+                        default='./logs/cjke/cjke_36800.pth',
                         help='Path to checkpoint for resume')
     parser.add_argument('-f',
                         '--force_resume',
