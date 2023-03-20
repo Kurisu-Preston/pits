@@ -17,7 +17,7 @@ Preprint version contains some errors! Please wait for the update!
 
 README IS WIP...
   
-fix requirements.txt  
+fix requirements.txt for colab  
 ## Preparing the environment  
 ```
 pip install -r requirements.txt
@@ -46,7 +46,7 @@ wget https://huggingface.co/spaces/anonymous-pits/pits/resolve/main/logs/pits_vc
 ```
 fine tuning the pretrained checkpoint
 ```
-python train.py -c configs/config_cjke.yaml -m cjke -t logs/pits_vctk_AD_3000.pth
+CUDA_VISIBLE_DEVICES=0 python train.py -c configs/config_cjke.yaml -m cjke -t logs/pits_vctk_AD_3000.pth
 ```
 training from scratch
 ```
@@ -54,7 +54,7 @@ python train.py -c configs/config_cjke.yaml -m cjke
 ```
 resume from previous training checkpoint
 ```
-python train.py -c configs/config_cjke.yaml -m cjke -r logs/cjke/cjke_3000.pth
+CUDA_VISIBLE_DEVICES=0 python train.py -c configs/config_cjke.yaml -m cjke -r logs/cjke/cjke_3000.pth
 ```
 
 ## References
