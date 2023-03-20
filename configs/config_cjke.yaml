@@ -22,7 +22,7 @@ train:
   keep_ckpts: 5
 
 data:
-  data_path: ""
+  data_path: "dataset"
   training_files: "filelists/train.list.cleaned"
   validation_files: "filelists/val.list.cleaned"
   languages: "en_US" 
