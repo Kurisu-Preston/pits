@@ -16,18 +16,20 @@ Preprint version contains some errors! Please wait for the update!
 ![overall](asset/overall.png) 
 
 README IS WIP...
-## Preprocess 
-prepare filelist train.list/val.list
-
-support chinese[ZH] japanese[JA] english[EN] korean[KO]  
   
 fix requirements.txt  
+## Preparing the environment  
 ```
 pip install -r requirements.txt
 ```
 ```
 python setup.py build_ext --inplace
 ```
+## Preprocess 
+prepare filelist train.list/val.list
+
+support chinese[ZH] japanese[JA] english[EN] korean[KO]  
+
 ```
 python preprocess.py 
 ```
