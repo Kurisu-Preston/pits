@@ -20,6 +20,7 @@ README IS WIP...
 prepare filelist train.list/val.list
 
 support chinese[ZH] japanese[JA] english[EN] korean[KO]  
+  
 fix requirements.txt  
 ```
 pip install -r requirements.txt
