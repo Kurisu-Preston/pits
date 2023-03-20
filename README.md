@@ -20,6 +20,13 @@ README IS WIP...
 prepare filelist train.list/val.list
 
 support chinese[ZH] japanese[JA] english[EN] korean[KO]
+fix requirements.txt
+```
+pip install -r requirements.txt
+```
+```
+python setup.py build_ext --inplace
+```
 ```
 python preprocess.py 
 ```
@@ -36,7 +43,7 @@ wget https://huggingface.co/spaces/anonymous-pits/pits/resolve/main/logs/pits_vc
 ```
 fine tuning the pretrained checkpoint
 ```
-python train.py -c configs/config_cjke.yaml -m cjke -t pits_vctk_AD_3000.pth
+python train.py -c configs/config_cjke.yaml -m cjke -t logs/pits_vctk_AD_3000.pth
 ```
 training from scratch
 ```
