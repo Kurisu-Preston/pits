@@ -22,5 +22,9 @@ eng_to_ipa==0.0.2
 ko_pron==1.3
 opencc==1.1.1
 pypinyin_dict
+tensorflow==1.15.0
+plotnine==0.7.0
+mizani==0.7.0
+arviz==0.9.0
 g2p_en
 g2pM
