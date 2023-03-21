@@ -23,7 +23,8 @@ ko_pron==1.3
 opencc==1.1.1
 pypinyin_dict
 plotnine==0.7.0
-mizani==0.7.0
+mizani==0.7.1
 arviz==0.9.0
+tensorflow==1.14.0
 g2p_en
 g2pM
