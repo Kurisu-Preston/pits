@@ -22,6 +22,7 @@ fix requirements.txt for colab
 ```
 pip install -r requirements.txt
 ```
+in monotonic_align  
 ```
 python setup.py build_ext --inplace
 ```
