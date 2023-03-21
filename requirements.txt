@@ -1,6 +1,6 @@
 Cython==0.29.21
 matplotlib==3.3.1
-tensorboard
+tensorboard==2.0.0
 kiwipiepy==0.8.1
 librosa==0.8.0
 numpy==1.21.6
