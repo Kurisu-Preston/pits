@@ -5,7 +5,6 @@ kiwipiepy==0.8.1
 librosa==0.8.0
 numpy==1.20.3
 scipy==1.6.3
-Unidecode==1.1.1
 omegaconf==2.1.0
 alias_free_torch==0.0.6
 phaseaug==0.0.2
