@@ -18,7 +18,11 @@ Preprint version contains some errors! Please wait for the update!
 README IS WIP...
   
 fix requirements.txt for colab  
+running on python3.9  
 ## Preparing the environment  
+```
+git clone https://github.com/Kurisu-Preston/pits-for-colab
+```
 ```
 pip install -r requirements.txt
 ```
