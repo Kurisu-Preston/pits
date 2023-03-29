@@ -21,7 +21,7 @@ fix requirements.txt for colab
 running on python3.9  
 ## Preparing the environment  
 ```
-git clone https://github.com/Kurisu-Preston/pits-for-colab
+git clone https://github.com/Kurisu-Preston/pits
 ```
 ```
 pip install -r requirements.txt
